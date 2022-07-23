@@ -13,11 +13,23 @@ namespace Infrastructure.Data
     {
 public static IQueryable<TEntity> GetQuery(IQueryable<TEntity> inputQuery, ISpecification<TEntity> spec)
         {
-
-           var query = inputQuery;
-            if(spec.Criteria != null)
+            //asuume that we have Product Entity 
+             var query = inputQuery; //query = IQueryable<Product>
+            if(spec.Criteria != null) //if the Criteria not equal null we filter with that createria
             {
                 query = query.Where(spec.Criteria);
+            }
+            if (spec.OrderBy != null) //then add orderBy
+            {
+                query = query.OrderBy(spec.OrderBy);
+            } 
+            if (spec.OrderByDes != null)
+            {
+                query = query.OrderByDescending(spec.OrderByDes);
+            }
+            if (spec.IsPaginEnable)  //Check if The isPaging Enable 
+            {
+               query= query.Skip(spec.Skip).Take(spec.Take);
             }
             query = spec.Includes.Aggregate(query, (current, include) => current.Include(include));
             return query;

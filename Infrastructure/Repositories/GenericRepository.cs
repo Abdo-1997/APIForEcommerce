@@ -21,7 +21,7 @@ namespace Infrastructure.Repositories
             _context = context;
         }
         #region Apply specfication to Entity 
-        //This class Take Ispecifcation and return Iqueyable 
+        //This class Take Ispecifcation and return Iqueyable with neded spec
         private IQueryable<T> ApplySpecfication(ISpecification<T> spec)
         {
             return SpecificationEvaluator<T>.GetQuery(_context.Set<T>().AsQueryable(), spec);
@@ -47,7 +47,10 @@ namespace Infrastructure.Repositories
         {
             return await ApplySpecfication(spec).ToListAsync();
         }
-
-       
+        //count result
+        public async Task<int> GetCountAsync(ISpecification<T> spec)
+        {
+          return await ApplySpecfication(spec).CountAsync();
+        }
     }
 }

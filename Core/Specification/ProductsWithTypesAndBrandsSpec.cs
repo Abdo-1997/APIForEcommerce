@@ -14,11 +14,37 @@ namespace Core.Specification
             AddToIncludes(p => p.ProductType);
             AddToIncludes(p => p.ProductBrand);
         }
+
         //This Constractor to get  IQurable of Products 
-        public ProductsWithTypesAndBrandsSpec()
+        public ProductsWithTypesAndBrandsSpec(ProductSpecParms ProductPrams) : base(x => 
+            (string.IsNullOrEmpty(ProductPrams.Search)|| x.Name.ToLower().Contains(ProductPrams.Search))&&
+            (!ProductPrams.BrandId.HasValue || x.ProductBrandId == ProductPrams.BrandId) &&
+            (!ProductPrams.TypeId.HasValue || x.ProductTypeId == ProductPrams.TypeId) 
+        
+           )
         {
             AddToIncludes(p => p.ProductType);
             AddToIncludes(p => p.ProductBrand);
+            AddOrderBy(p => p.Name);
+            ApplyPaging(ProductPrams.PageSize*(ProductPrams.PageIndx -1),ProductPrams.PageSize);
+
+            if (!string.IsNullOrEmpty(ProductPrams.Sort))
+            {
+                switch (ProductPrams.Sort)
+                {
+                    case "priceAsc":
+                        AddOrderBy(p=>p.Price);
+                        break;
+                    case "priceDesc":
+                        AddOrderByDes(p => p.Price);
+                        break;
+                    default:
+                        AddOrderBy(n => n.Name);
+                        break;
+                }
+            }
         }
+
+      
     }
 }
